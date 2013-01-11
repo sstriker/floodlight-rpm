@@ -1,0 +1,12 @@
+#
+# This file can be used to set additional environment variables for
+# the floodlight process, or pass additional options to the floodlight
+# executable.
+#
+
+#
+# To pass additional options to the floodlight script at startup, set
+# OPTIONS here.
+#
+#OPTIONS=
+

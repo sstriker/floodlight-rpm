@@ -9,6 +9,7 @@ Source1:        floodlight.logrotate
 Source2:        floodlight.service
 Source3:        floodlight.sysconf
 Source4:        floodlight.logback.xml
+Source5:        floodlight.1
 Patch0:         floodlight.system-jars.patch
 BuildArch:      noarch
 
@@ -89,6 +90,8 @@ install -d -m 755 %{buildroot}%{_javadir}/
 cp -p target/floodlight.jar %{buildroot}%{_javadir}/
 
 # Documentation
+mkdir -p %{buildroot}%{_mandir}/man1/
+install -m 644 %{SOURCE5} %{buildroot}%{_mandir}/man1/
 install -d -m 755 %{buildroot}%{_javadocdir}/%{name}/
 cp -rp target/docs/ %{buildroot}%{_javadocdir}/%{name}/
 
@@ -138,6 +141,7 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %{_bindir}/*
+%{_mandir}/man1/*
 %{_javadir}/*
 %doc README.txt LICENSE.txt NOTICE.txt
 

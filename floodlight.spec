@@ -10,7 +10,7 @@ Source2:        floodlight.service
 Source3:        floodlight.sysconf
 Source4:        floodlight.logback.xml
 Patch0:         floodlight.system-jars.patch
-BuildArch:	noarch
+BuildArch:      noarch
 
 BuildRequires:  java-devel
 BuildRequires:  jpackage-utils
@@ -25,7 +25,7 @@ BuildRequires:  netty
 BuildRequires:  slf4j
 # For concurrentlinkedhashmap see:
 #   https://bugzilla.redhat.com/show_bug.cgi?id=865890
-BuildRequires: 	concurrentlinkedhashmap-lru
+BuildRequires:         concurrentlinkedhashmap-lru
 # For thrift see:
 #   https://bugzilla.redhat.com/show_bug.cgi?id=861783
 BuildRequires:  thrift
@@ -35,16 +35,16 @@ BuildRequires:  java-libthrift
 Requires:       java
 Requires:       jpackage-utils
 Requires:       jython
-Requires: 	antlr3-java
-Requires: 	args4j
-Requires: 	easymock
-Requires: 	jackson
-Requires: 	logback
-Requires: 	netty
-Requires: 	slf4j
-Requires: 	concurrentlinkedhashmap-lru
-Requires:	java-libthrift
-#Requires:	restlet
+Requires:       antlr3-java
+Requires:       args4j
+Requires:       easymock
+Requires:       jackson
+Requires:       logback
+Requires:       netty
+Requires:       slf4j
+Requires:       concurrentlinkedhashmap-lru
+Requires:       java-libthrift
+#Requires:       restlet
 
 Requires(pre): /usr/sbin/useradd
 Requires(preun): systemd-units
@@ -94,18 +94,46 @@ cp -rp target/docs/ %{buildroot}%{_javadocdir}/%{name}/
 
 # Install logrotate config
 mkdir -p %{buildroot}/etc/logrotate.d
-install -m 644 -p $RPM_SOURCE_DIR/floodlight.logrotate \
-	%{buildroot}/etc/logrotate.d/floodlight
+install -m 644 -p %{SOURCE1} \
+        %{buildroot}/etc/logrotate.d/floodlight
 
 # Install systemd service files
 mkdir -p %{buildroot}%{_unitdir}
-install -p -m 644 $RPM_SOURCE_DIR/floodlight.service \
+install -p -m 644 %{SOURCE2} \
         %{buildroot}%{_unitdir}/floodlight.service
 
 mkdir %{buildroot}%{_sysconfdir}/sysconfig
-install -m 644 -p $RPM_SOURCE_DIR/floodlight.sysconf \
+install -m 644 -p %{SOURCE3} \
         %{buildroot}%{_sysconfdir}/sysconfig/floodlight
 
+%pre
+# Add the "floodlight" user
+/usr/sbin/useradd -c "Floodlight" \
+        -s /sbin/nologin -r floodlight 2> /dev/null || :
+
+%post
+if [ $1 -eq 1 ] ; then
+        # Initial installation
+#        /bin/systemctl daemon-reload >/dev/null 2&1 || :
+        /bin/systemctl enable floodlight.service >/dev/null 2>&1 || :
+fi
+
+%preun
+if [ $1 -eq 0 ] ; then
+        # Package removal, not upgrade
+        /bin/systemctl --no-reload disable floodlight.service >/dev/null 2>&1 || :
+        /bin/systemctl stop floodlight.service >/dev/null 2>&1 || :
+fi
+
+%postun
+/bin/systemctl daemon-reload >/dev/null 2&1 || :
+if [ $1 -ge 1 ] ; then
+        # Package upgrade, not uninstall
+        /bin/systemctl try-restart floodlight.service >/dev/null 2>&1 || :
+fi
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
@@ -121,23 +149,6 @@ install -m 644 -p $RPM_SOURCE_DIR/floodlight.sysconf \
 %files javadoc
 %defattr(-,root,root)
 %{_javadocdir}/%{name}
-
-%pre
-# Add the "floodlight" user
-/usr/sbin/useradd -c "Floodlight" \
-	-s /sbin/nologin -r floodlight 2> /dev/null || :
-
-%post
-%systemd_post floodlight.service
-
-%preun
-%systemd_preun floodlight.service
-
-%postun
-%systemd_postun
-
-%clean
-rm -rf %{buildroot}
 
 %changelog
 * Fri Jan 04 2012 Sander Striker <s.striker@striker.nl> 0.90-1

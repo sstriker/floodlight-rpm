@@ -24,11 +24,7 @@ BuildRequires:  jackson
 BuildRequires:  logback
 BuildRequires:  netty
 BuildRequires:  slf4j
-# For concurrentlinkedhashmap see:
-#   https://bugzilla.redhat.com/show_bug.cgi?id=865890
-BuildRequires:         concurrentlinkedhashmap-lru
-# For thrift see:
-#   https://bugzilla.redhat.com/show_bug.cgi?id=861783
+BuildRequires:  concurrentlinkedhashmap-lru
 BuildRequires:  thrift
 BuildRequires:  java-libthrift
 #BuildRequires:  restlet

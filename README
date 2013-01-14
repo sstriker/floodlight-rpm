@@ -1,0 +1,11 @@
+RPM Packaging for Floodlight.
+
+Depends on:
+- concurrentlinkedhashmap
+  https://bugzilla.redhat.com/show_bug.cgi?id=865890
+- thrift
+  https://bugzilla.redhat.com/show_bug.cgi?id=861783
+
+And also depends on packaging of restlet:
+  https://github.com/sstriker/restlet-rpm
+

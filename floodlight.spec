@@ -43,7 +43,7 @@ Requires:       concurrentlinkedhashmap-lru
 Requires:       java-libthrift
 #Requires:       restlet
 
-Requires(pre): /usr/sbin/useradd
+Requires(pre): shadow-utils
 Requires(preun): systemd-units
 Requires(postun): systemd-units
 Requires(post): systemd-units
@@ -91,10 +91,15 @@ install -m 644 %{SOURCE5} %{buildroot}%{_mandir}/man1/
 install -d -m 755 %{buildroot}%{_javadocdir}/%{name}/
 cp -rp target/docs/ %{buildroot}%{_javadocdir}/%{name}/
 
+# Install logback config
+mkdir -p %{buildroot}%{_sysconfdir}/floodlight
+install -m 644 -p %{SOURCE4} \
+        %{buildroot}%{_sysconfdir}/floodlight/logback.xml
+
 # Install logrotate config
-mkdir -p %{buildroot}/etc/logrotate.d
+mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
 install -m 644 -p %{SOURCE1} \
-        %{buildroot}/etc/logrotate.d/floodlight
+        %{buildroot}%{_sysconfdir}/logrotate.d/floodlight
 
 # Install systemd service files
 mkdir -p %{buildroot}%{_unitdir}
@@ -106,9 +111,11 @@ install -m 644 -p %{SOURCE3} \
         %{buildroot}%{_sysconfdir}/sysconfig/floodlight
 
 %pre
-# Add the "floodlight" user
-/usr/sbin/useradd -c "Floodlight" \
-        -s /sbin/nologin -r floodlight 2> /dev/null || :
+getent group floodlight >/dev/null || groupadd -r floodlight
+getent passwd floodlight >/dev/null || \
+    useradd -r -g floodlight -d %{_sysconfdir}/floodlight -s /sbin/nologin \
+    -c "Floodlight daemon" floodlight
+exit 0
 
 %post
 if [ $1 -eq 1 ] ; then
@@ -143,6 +150,7 @@ rm -rf %{buildroot}
 
 %config(noreplace) %{_sysconfdir}/logrotate.d/floodlight
 %config(noreplace) %{_sysconfdir}/sysconfig/floodlight
+%config(noreplace) %{_sysconfdir}/floodlight/logback.xml
 
 %{_unitdir}/*.service
 

@@ -1,5 +1,5 @@
---- build.xml.orig	2012-10-26 19:11:24.000000000 +0200
-+++ build.xml	2013-01-03 00:53:02.299889212 +0100
+--- build.xml	2012-10-26 19:11:24.000000000 +0200
++++ build.xml	2013-01-14 22:36:48.168076086 +0100
 @@ -46,24 +46,24 @@
      <property name="thrift.package" value="net/floodlightcontroller/packetstreamer/thrift"/>
      <property name="ant.build.javac.source" value="1.6"/>
@@ -98,7 +98,7 @@
      <!-- Thrift build based on http://www.flester.com/blog/2009/04/26/using-thrift-from-ant -->
      <fileset id="thrift.files" dir="${thrift.dir}">
          <include name="**/*.thrift"/>
-@@ -162,84 +123,19 @@
+@@ -162,84 +123,18 @@
          </java>
      </target>
  
@@ -163,7 +163,6 @@
              <manifest>
                  <attribute name="Main-Class" value="${main-class}"/>
 -                <attribute name="Class-Path" value="."/>
-+                <attribute name="Class-Path" value="${jars}"/>
              </manifest>
              <fileset dir="${build}"/>
              <fileset dir="${resources}"/>
@@ -187,7 +186,7 @@
          </jar>
      </target>
  
-@@ -261,18 +157,4 @@
+@@ -261,18 +156,4 @@
              version="true"/>
      </target>
  

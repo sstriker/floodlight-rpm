@@ -81,7 +81,7 @@ ant javadoc
 %install
 rm -rf %{buildroot}
 install -d -m 755 %{buildroot}%{_bindir}/
-%jpackage_script net.floodlightcontroller.core.Main "" "-Dpython.home=/usr/share/jython" floodlight floodlight true
+%jpackage_script net.floodlightcontroller.core.Main "" "-Dpython.home=/usr/share/jython" .:floodlight:logback/logback-classic:logback/logback-core:jackson/jackson-core-asl:jackson/jackson-mapper-asl:slf4j/api:restlet/restlet:restlet/jackson:restlet/simple:restlet/slf4j:slf4j/simple:netty:args4j:concurrentlinkedhashmap-lru:jython:libthrift floodlight true
 install -d -m 755 %{buildroot}%{_javadir}/
 cp -p target/floodlight.jar %{buildroot}%{_javadir}/
 
